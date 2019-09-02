@@ -10,6 +10,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.Scanner;
 import java.util.Arrays;
+import javax.imageio.ImageIO;
 
 public class ImageClass
 {
@@ -23,13 +24,7 @@ public class ImageClass
         while(scan.hasNextLine())
         {
             File file = new File(scan.nextLine());
-
-            //checks to make sure that the current file is an image.
-            if(Files.probeContentType(file.toPath()).substring(0, 5).equals("image"))
-            {
-                System.out.println(file.toURI().toString());
-                images.add(file.toURI().toString());
-            }
+            images.add(file.toURI().toString());
 
         }
 
@@ -45,11 +40,12 @@ public class ImageClass
 
     public void changeImageDirectory(File directory) throws IOException
     {
-        images = new ArrayList<>(Arrays.asList(directory.list()));
-        for(int i = 0, listSize = images.size(); i < listSize; ++i)
+        images.clear();
+        String[] names = directory.list();
+        for(int i = 0, listSize = names.length; i < listSize; ++i)
         {
-            File file = new File(directory.getAbsolutePath() + "/" + images.get(i));
-            images.set(i, file.toURI().toString());
+            File file = new File(directory.getAbsolutePath() + "/" + names[i]);
+            images.add(file.toURI().toString());
         }
 
         i = 0;
@@ -59,9 +55,16 @@ public class ImageClass
 
     }
 
-    public ImageView showImage()
+    public ImageView getNextImage(char nextOrPrevious)
     {
-        changeImage();
+        if (nextOrPrevious == 'n')
+        {
+            loadNextImage();
+        }
+        else if(nextOrPrevious == 'p')
+        {
+            loadPreviousImage();
+        }
         return currentImage;
     }
 
@@ -75,7 +78,7 @@ public class ImageClass
         startTime = System.currentTimeMillis();
     }
 
-    private void changeImage()
+    private void loadNextImage()
     {
         //updates the idx of the list containing all the images.
         ++i;
@@ -86,6 +89,19 @@ public class ImageClass
 
         currentImage.setImage(new Image(images.get(i)));
     }
+
+    private void loadPreviousImage()
+    {
+        //updates the idx of the list containing all the images.
+        --i;
+        if(i == -1)
+        {
+            i = images.size()-1;
+        }
+
+        currentImage.setImage(new Image(images.get(i)));
+    }
+
 
     private List<String> images;
     private int i;

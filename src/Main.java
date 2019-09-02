@@ -9,6 +9,8 @@ import javafx.animation.AnimationTimer;
 import javafx.stage.DirectoryChooser;
 import java.io.File;
 import java.io.IOException;
+import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,11 +19,13 @@ import java.util.Arrays;
     THINGS TO ADD:
         - DONE: change the ImageClass to store the filepath instead of storing the images so it saves on memory
         - DONE: automatically set to next picture after a certain time.
-        - set time limit before changing to next picture.
+        - DONE: set time limit before changing to next picture.
         - DONE: change directory in app to display all pictures in that directory.
         - add animation to simulate swiping to next picture.
         - clean up code(last)
+        - Add(create in photoshop) a default image that tells the user to choose a directory to start viewing
  */
+
 
 public class Main extends Application {
 
@@ -29,27 +33,34 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception
     {
         ImageClass images = new ImageClass("C:\\Users\\Evan\\Desktop\\images.txt");
+        PictureChangeClass nextPictureButton = new PictureChangeClass("Next Picture",images, 'n');
+        PictureChangeClass previousPictureButton = new PictureChangeClass("Previous Picture", images, 'p');
+
+        TimeIntervalClass sliderTime = new TimeIntervalClass();
 
         //Setting title to the Stage
         primaryStage.setTitle("Loading an image");
 
-        //change pic button
-        Button button = new Button("Change picture");
-        button.setLayoutY(500);
-        button.setOnAction(value ->
-                images.showImage());
-
         DirectoryChooser imgDirectory = new DirectoryChooser();
         Button directButton = new Button("Select Directory");
 
-        Group testGroup = new Group(images.showImage(), button);
+        Group testGroup = new Group(images.getNextImage('n'));
+
+        testGroup.getChildren().add(sliderTime.getTextField());
+        testGroup.getChildren().add(sliderTime.getText());
+        testGroup.getChildren().add(nextPictureButton.getButton());
+        testGroup.getChildren().add(previousPictureButton.getButton());
 
         directButton.setOnAction(value ->
         {
             File directory = imgDirectory.showDialog(primaryStage);
             try
             {
-                images.changeImageDirectory(directory);
+                //returns null if the DirectoryChooser was cancelled
+                if(directory != null)
+                {
+                    images.changeImageDirectory(directory);
+                }
             } catch (IOException e)
             {
                 e.printStackTrace();
@@ -68,14 +79,14 @@ public class Main extends Application {
             @Override
             public void handle(long now) {
                 long elapsedMillis = System.currentTimeMillis() - images.getStartTime() ;
-                if(elapsedMillis > 5000)
+                int timeInMillis = sliderTime.getSliderTime();
+                if(elapsedMillis > timeInMillis && timeInMillis > 0)
                 {
-                    images.showImage();
+                    images.getNextImage('n');
                     images.resetStartTime();
                 }
             }
         }.start();
-        System.out.println("you");
     }
 
 
