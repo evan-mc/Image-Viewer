@@ -3,28 +3,26 @@ package sample;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
-
-/*
-
-    probably need to reformat this class strructure as well as
-    the class name(shouldnt be called buttonclass). do that later
-    try making this class inherit from TextField
- */
 public class TimeIntervalClass
 {
+    private TextField sliderTime;
+    private Text sliderText;
+    private long timeInMillis;
+    private long timeLimit;
+
     TimeIntervalClass()
     {
         sliderTime = new TextField();
         sliderTime.setText("5");
         sliderTime.setLayoutX(450);
 
-        timeInMillis = 5000;
-
+        timeLimit = 5000;
+        timeInMillis = System.currentTimeMillis();
         sliderText = new Text("Enter time to switch to next picture");
 
         sliderTime.setOnAction(value ->
         {
-            timeInMillis = changeTime(sliderTime.getText());
+            timeLimit = changeTime(sliderTime.getText());
         });
 
         sliderText.setLayoutX(263);
@@ -42,9 +40,19 @@ public class TimeIntervalClass
         return sliderText;
     }
 
-    public int getSliderTime()
+    public long getTimeInMillis()
     {
         return timeInMillis;
+    }
+
+    public long getTimeLimit()
+    {
+        return timeLimit;
+    }
+
+    public void resetSliderTime()
+    {
+        timeInMillis = System.currentTimeMillis();
     }
 
     private int changeTime(String newTime)
@@ -62,8 +70,4 @@ public class TimeIntervalClass
 
         return returnInt;
     }
-
-        private TextField sliderTime;
-        private Text sliderText;
-        private int timeInMillis;
 }

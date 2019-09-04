@@ -1,34 +1,27 @@
 package sample;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.io.File;
-import java.nio.file.Files;
-import java.util.Scanner;
-import java.util.Arrays;
-import javax.imageio.ImageIO;
-
 public class ImageClass
 {
-    public ImageClass(String PathToImgSrc) throws IOException
+    private List<String> images;
+    private int currentImgIdx;
+    private ImageView currentImage;
+
+    public ImageClass(File pathToImgSrc) throws IOException
     {
         images = new ArrayList<>();
-        i = 0;
-        startTime = System.currentTimeMillis();
+        images.add(pathToImgSrc.toURI().toString());
+        currentImgIdx = 0;
 
-        Scanner scan = new Scanner(new File(PathToImgSrc));
-        while(scan.hasNextLine())
-        {
-            File file = new File(scan.nextLine());
-            images.add(file.toURI().toString());
-
-        }
-
-        currentImage = new ImageView(new Image(images.get(i)));
+        currentImage = new ImageView(new Image(images.get(currentImgIdx)));
 
         //positions and re-sizes the images to fit properly.
         currentImage.setFitHeight(450);
@@ -40,19 +33,16 @@ public class ImageClass
 
     public void changeImageDirectory(File directory) throws IOException
     {
-        images.clear();
-        String[] names = directory.list();
-        for(int i = 0, listSize = names.length; i < listSize; ++i)
+        images = new ArrayList<>(Arrays.asList(directory.list()));
+
+        for (int i = 0, listSize = images.size(); i < listSize; ++i)
         {
-            File file = new File(directory.getAbsolutePath() + "/" + names[i]);
-            images.add(file.toURI().toString());
+            File file = new File(directory.getAbsolutePath() + "/" + images.get(i));
+            images.set(i, file.toURI().toString());
         }
+        currentImgIdx = 0;
 
-        i = 0;
-        startTime = System.currentTimeMillis();
-
-        currentImage.setImage(new Image(images.get(i)));
-
+        currentImage.setImage(new Image(images.get(currentImgIdx)));
     }
 
     public ImageView getNextImage(char nextOrPrevious)
@@ -68,44 +58,30 @@ public class ImageClass
         return currentImage;
     }
 
-    public long getStartTime()
-    {
-        return startTime;
-    }
-
-    public void resetStartTime()
-    {
-        startTime = System.currentTimeMillis();
-    }
-
     private void loadNextImage()
     {
-        //updates the idx of the list containing all the images.
-        ++i;
-        if(i == images.size())
+        if(currentImgIdx < images.size()-1)
         {
-            i = 0;
+            ++currentImgIdx;
+        }
+        else
+        {
+            currentImgIdx = 0;
         }
 
-        currentImage.setImage(new Image(images.get(i)));
+        currentImage.setImage(new Image(images.get(currentImgIdx)));
     }
 
     private void loadPreviousImage()
     {
-        //updates the idx of the list containing all the images.
-        --i;
-        if(i == -1)
+        if(currentImgIdx > 0)
         {
-            i = images.size()-1;
+            --currentImgIdx;
         }
-
-        currentImage.setImage(new Image(images.get(i)));
+        else
+        {
+            currentImgIdx = images.size()-1;
+        }
+        currentImage.setImage(new Image(images.get(currentImgIdx)));
     }
-
-
-    private List<String> images;
-    private int i;
-    private ImageView currentImage;
-
-    private long startTime;
 }

@@ -1,23 +1,12 @@
 package sample;
 
-import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.control.Button;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.animation.AnimationTimer;
-import javafx.stage.DirectoryChooser;
-import java.io.File;
-import java.io.IOException;
-import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class PictureChangeClass
 {
-    PictureChangeClass(String buttonText, ImageClass images, char choice)
+    private Button changePictureButton;
+
+    PictureChangeClass(String buttonText, ImageClass images, TimeIntervalClass time, char choice)
     {
         changePictureButton = new Button(buttonText);
 
@@ -25,8 +14,8 @@ public class PictureChangeClass
         {
             changePictureButton.setOnAction(value ->
             {
-                images.resetStartTime();
                 images.getNextImage('n');
+                time.resetSliderTime();
             });
 
             changePictureButton.setLayoutX(500);
@@ -35,8 +24,8 @@ public class PictureChangeClass
         {
             changePictureButton.setOnAction(value ->
             {
-                images.resetStartTime();
                 images.getNextImage('p');
+                time.resetSliderTime();
             });
         }
 
@@ -47,6 +36,4 @@ public class PictureChangeClass
     {
         return changePictureButton;
     }
-
-    private Button changePictureButton;
 }
